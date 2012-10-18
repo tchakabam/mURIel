@@ -1,22 +1,21 @@
 /*
- * Url.cpp
  *
- *  Created on: Apr 12, 2011
- *  Modified on: Oct 1, 2012
+ *     Copyright (c) 2011, 2012 Stephan Hesse <tchakabam@gmail.com>
  *
- *      @author: Stephan Hesse <disparat@googlemail.com>
+ *     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ *     documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ *     the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ *     and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- *      copyright (c) 2011, 2012, Some rights reserved
+ *     The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- *		Dual license:
- *		This piece of software may be used, modified and distributed freely for
- *		non-commercial use. For commercially aimed, profit-bound usage, extension,
- *		static linking and non-share-alike or open source distribution, please contact
- *		the author.
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *     LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ *     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- *		mURIeL: a library for multiple URI/URLs
+ *	   mURIeL: a library for multiple URI/URLs
  *
- *		version: 0.4
  */
 
 #include <muriel/Url.h>
