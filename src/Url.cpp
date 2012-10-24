@@ -37,7 +37,7 @@ using namespace std;
 			init(uri);
 			m_range = range;
 	}
-
+/*
 	Url::Url(const Url& url) {
 			scheme = url.getScheme();
 			port = url.getPort();
@@ -46,9 +46,9 @@ using namespace std;
 			query = url.getQuery();
 			fragment = url.getFragment();
 			m_range = url.getRange();
-			m_Listeners.clear();
+			//m_Listeners.clear();
 	}
-
+*/
 	/*
 	 *
 	 *
@@ -60,6 +60,8 @@ using namespace std;
 
 				//SCHEME: //////////////////////////////////////////////////////////////
 				/* Do we have a scheme ? */
+				MURIEL_LOG("Parsing: %s", uri.c_str());
+
 				size_t pHasScheme = uri.find("://");
 				size_t scheme_end = 0;
 				if (pHasScheme != string::npos) {
@@ -125,9 +127,15 @@ using namespace std;
 
 	}
 
+	Url::~Url() {
+		MURIEL_LOG("Destroying: %u", this);
+	}
+
+/*
 	void Url::enroll(UrlListener* const ul) {
 		m_Listeners.push_back(ul);
 	}
+*/
 
 	void Url::remove(Part p) {
 		switch(p) {
@@ -175,7 +183,7 @@ using namespace std;
 			break;
 		}
 
-		fire(p);
+		//fire(p);
 	}
 	void Url::alter(Part p, const UrlElement & e) {
 		switch(p) {
@@ -204,7 +212,7 @@ using namespace std;
 			break;
 		}
 
-		fire(p);
+		//fire(p);
 	}
 
 	bool Url::isUsingRange() const {return ! m_range.b_None;}
@@ -303,14 +311,14 @@ using namespace std;
     {
     	return this->scheme;
     }
-
+/*
 	void Url::fire(Part p) {
-		std::list<UrlListener*>::iterator it = m_Listeners.begin();
+		std::vector<UrlListener*>::iterator it = m_Listeners.begin();
 		while(it!=m_Listeners.end()) {
 			(*it++)->onChanged(this, p);
 		}
 	}
-
+*/
 
 
 

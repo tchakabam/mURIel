@@ -20,7 +20,7 @@
 #ifndef URI_H_
 #define URI_H_
 
-#include <list>
+#include <vector>
 #include <map>
 #include <string>
 #include <sstream>
@@ -83,11 +83,13 @@ class Url {
 		};
 
 		Url();
-		Url(const Url& url);
+		//Url(const Url& url);
 		Url(const UrlElement& uri);
 		Url(const UrlElement& uri, const ByteRange& range);
 
-		void enroll(UrlListener* const ul);
+		~Url();
+
+		//void enroll(UrlListener* const ul);
 
 		void remove(Part p);
 		void appendTo(Part p, const UrlElement  &e);
@@ -115,7 +117,7 @@ class Url {
 
 	protected:
 		void init(const UrlElement &uri);
-		void fire(Part p);
+		//void fire(Part p);
 	private:
 		UrlElement scheme;
 		UrlElement port;
@@ -124,7 +126,7 @@ class Url {
 		UrlElement query;
 		UrlElement fragment;
 		ByteRange m_range;
-		std::list<UrlListener*> m_Listeners;
+		//std::vector<UrlListener*> m_Listeners;
 };
 
 static std::map<Url::Scheme, UrlElement> SchemeMap;

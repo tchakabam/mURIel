@@ -23,7 +23,7 @@
 
 ////////////// CONFIG PARAMS //////////////////////
 
-#define DEBUG_LOG_ENABLED
+//#define DEBUG_LOG_ENABLED
 
 #define AUTO_INCLUDE_SCHEMES //disable this for not using the scheme map
 
@@ -35,6 +35,7 @@
 
 #ifdef DEBUG_LOG_ENABLED
 #include <iostream>
+#include <stdio.h>
 #define MURIEL_LOG(msg, ...) {std::cout << "{ mURIeL DeBug } " << __FILE__ << "::" << __FUNCTION__ << "():" << __LINE__ << " [ "; printf(msg, __VA_ARGS__); std::cout << " ]\n";}
 #else
 #define MURIEL_LOG(msg, ...) {}
