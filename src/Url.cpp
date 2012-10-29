@@ -215,6 +215,37 @@ using namespace std;
 		//fire(p);
 	}
 
+	char Url::getAnalysis() {
+
+		if( isAbsolute() ) return MURIEL_ABSOLUTE;
+
+		if( isRelative() ) return MURIEL_RELATIVE;
+
+		if ( isMalformed() ) return MURIEL_MALFORMED;
+
+		return MURIEL_ERROR;
+	}
+
+	bool Url::isAbsolute() {
+
+		return scheme.length() > 0
+				&& host.length() > 0;
+
+	}
+
+	bool Url::isRelative() {
+
+		return host.length() == 0 || scheme.length() == 0;
+
+	}
+
+	bool Url::isMalformed() {
+
+		return (host.length() == 0 && scheme.length() != 0)
+				|| (host.length() != 0 && scheme.length() == 0)
+				|| (host.length() == 0 && scheme.length() == 0 && path.length() == 0);
+	}
+
 	bool Url::isUsingRange() const {return ! m_range.b_None;}
 
 	ByteRange & Url::range() {
@@ -231,11 +262,17 @@ using namespace std;
 	UrlElement Url::toFull() const{
 
 			stringstream stream;
+
+			if(scheme.length() != 0) {
 									     stream << scheme << "://" << host;
-			if ( port.length() != 0 )    stream << ":" << port;
+			}
+
+			if ( port.length() != 0 )  {  stream << ":" << port; }
+
 										 stream << path;
-			if ( query.length() != 0)    stream << "?" << query;
-			if ( fragment.length() != 0) stream << "#" << fragment;
+
+			if ( query.length() != 0)  {  stream << "?" << query; }
+			if ( fragment.length() != 0) { stream << "#" << fragment; }
 
 			return stream.str();
     }

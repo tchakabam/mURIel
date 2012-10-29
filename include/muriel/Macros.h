@@ -49,4 +49,10 @@
 #define MURIEL_CONFIGURE() InitMuriel();
 #define MURIEL_CLEAR() { SchemeMap.clear(); }
 
+/* Return codes */
+#define MURIEL_ABSOLUTE 'a'
+#define MURIEL_RELATIVE 'r'
+#define MURIEL_MALFORMED 'm'
+#define MURIEL_ERROR 'e'
+
 #endif /* MACROS_H_ */

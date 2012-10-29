@@ -31,40 +31,9 @@
 
 class UrlListener;
 
+
 class Url {
 	public:
-		enum Scheme {
-			FTP,
-			HTTP,
-			HTTPS,
-			RTSP,
-			MAIL,
-			FILE,
-			DVD,
-			VCD,
-			BLURAY,
-			ABOUT,
-			CALLTO,
-			DAV,
-			SKYPE,
-			SPOTIFY,
-			XMPP,
-			IM,
-			SIP,
-			MMS,
-			IMAP,
-			DNS,
-			SSH,
-			GIT,
-			CONTENT,
-			CHROME,
-			EDONKEY2K,
-			BITTORRENT,
-			MPEGTS,
-			SVN_HTTP,
-			SVN_SSH,
-			JAVASCRIPT
-		};
 
 		enum Part {
 			USER,
@@ -98,6 +67,12 @@ class Url {
 		bool isUsingRange() const;
 		ByteRange & range();
 
+		bool isRelative();
+		bool isAbsolute();
+		bool isMalformed();
+
+		char getAnalysis();
+
 		const ByteRange & getRange() const;
 		const UrlElement& getScheme() const;
 		const UrlElement& getPort() const;
@@ -129,7 +104,7 @@ class Url {
 		//std::vector<UrlListener*> m_Listeners;
 };
 
-static std::map<Url::Scheme, UrlElement> SchemeMap;
+
 
 class UrlListener {
 public:
@@ -156,6 +131,46 @@ class UrlValidator {
 	bool isMinimal();
 	bool isAmbigious();
 };
+
+class UrlScheme {
+public:
+	enum Protocol {
+		FTP,
+		HTTP,
+		HTTPS,
+		RTSP,
+		MAIL,
+		FILE,
+		DVD,
+		VCD,
+		BLURAY,
+		ABOUT,
+		CALLTO,
+		DAV,
+		SKYPE,
+		SPOTIFY,
+		XMPP,
+		IM,
+		SIP,
+		MMS,
+		IMAP,
+		DNS,
+		SSH,
+		GIT,
+		CONTENT,
+		CHROME,
+		EDONKEY2K,
+		BITTORRENT,
+		MPEGTS,
+		SVN_HTTP,
+		SVN_SSH,
+		JAVASCRIPT
+	};
+
+	Protocol Type;
+};
+
+static std::map<UrlScheme, UrlElement> SchemeMap;
 
 class UrlMap {
 
