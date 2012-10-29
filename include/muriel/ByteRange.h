@@ -24,6 +24,8 @@
 class ByteRange {
 
 	public:
+		ByteRange(const char* psz);
+
 		ByteRange(const std::string& s);
 
 		ByteRange(size_t from, size_t to)

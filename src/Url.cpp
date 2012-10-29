@@ -26,15 +26,15 @@
 
 using namespace std;
 
-	Url::Url(const string& uri)
+	Url::Url(const string& uri, bool bForceAbsolute)
 	{
-			init(uri);
+			init(uri, bForceAbsolute);
 			m_range.b_None = true;
 	}
 
-	Url::Url(const string& uri, const ByteRange& range)
+	Url::Url(const string& uri, const ByteRange& range, bool bForceAbsolute)
 	{
-			init(uri);
+			init(uri, bForceAbsolute);
 			m_range = range;
 	}
 /*
@@ -56,7 +56,7 @@ using namespace std;
 	 *
 	 */
 
-	void Url::init(const UrlElement & uri) {
+	void Url::init(const UrlElement & uri, bool bForceAbsolute) {
 
 				//SCHEME: //////////////////////////////////////////////////////////////
 				/* Do we have a scheme ? */
@@ -64,26 +64,47 @@ using namespace std;
 
 				size_t pHasScheme = uri.find("://");
 				size_t scheme_end = 0;
+				bool bScheme = false;
+
 				if (pHasScheme != string::npos) {
 
 					scheme_end = uri.find_first_of(":", 0);
+					bScheme = true;
 
+					scheme = uri.substr(0, scheme_end);
+
+					MURIEL_LOG("Scheme: %s", scheme.c_str());
 				}
-				scheme = uri.substr(0, scheme_end);
 
 				//HOST: /////////////////////////////////////////////////////////
 				size_t host_begin = 0;
-				if (scheme_end != 0) {
-					host_begin = uri.find_first_not_of("/", scheme_end+1);
-				}
-				size_t host_end = uri.find_first_of("/", host_begin+1);
+				size_t host_end;
+				bool bHost = false;
+				if( ( uri.at(0) != '/' && scheme.size() > 0 ) //in this case it should be absolute
+									|| ( bForceAbsolute ) ) {
 
-				host = uri.substr(host_begin, host_end - host_begin);
+					if(bScheme) {
+						host_begin = uri.find_first_not_of("/", scheme_end+1);
+					} else {
+						host_begin = 0;
+					}
+
+					host_end = uri.find_first_of("/", host_begin+1);
+
+					host = uri.substr(host_begin, host_end - host_begin);
+
+					bHost = true;
+
+					MURIEL_LOG("Host: %s", host.c_str());
+				}
 
 				//PATH: ///////////////////////////////////////////////////////////////
 
-				size_t path_begin = uri.find_first_of("/?#", host_begin+1);
+				size_t path_begin;
 				size_t path_end = uri.find_first_of("?#", host_begin+1);
+
+				if(bHost) path_begin = uri.find_first_of("/?#", host_begin+1);
+				else path_begin = 0;
 
 				if (path_begin == string::npos) {
 					path = "/";
@@ -92,6 +113,8 @@ using namespace std;
 				}
 
 				path = uri.substr(path_begin, path_end-path_begin);
+
+				MURIEL_LOG("Path: %s", path.c_str());
 
 				//PORT: ////////////////////////////////////////////////////////////////////////////
 
@@ -141,6 +164,9 @@ using namespace std;
 		switch(p) {
 		case FULL:
 			init("");
+			break;
+		case FILENAME:
+			path = toDirectory();
 			break;
 		}
 	}
@@ -264,12 +290,14 @@ using namespace std;
 			stringstream stream;
 
 			if(scheme.length() != 0) {
-									     stream << scheme << "://" << host;
+									     stream << scheme << "://" ;
 			}
+
+			stream << host;
 
 			if ( port.length() != 0 )  {  stream << ":" << port; }
 
-										 stream << path;
+			stream << path;
 
 			if ( query.length() != 0)  {  stream << "?" << query; }
 			if ( fragment.length() != 0) { stream << "#" << fragment; }

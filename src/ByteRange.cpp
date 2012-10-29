@@ -26,6 +26,15 @@
 
 using namespace std;
 
+	ByteRange::ByteRange(const char* psz) {
+
+		if(psz == NULL) {
+			b_None = true;
+		} else {
+			b_None = ! parse_range(string(psz), &u_From, &u_To);
+		}
+	}
+
 	ByteRange::ByteRange(const string& s)
 	{
 		b_None = ! parse_range(s, &u_From, &u_To);

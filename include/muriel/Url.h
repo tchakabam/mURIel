@@ -53,8 +53,8 @@ class Url {
 
 		Url();
 		//Url(const Url& url);
-		Url(const UrlElement& uri);
-		Url(const UrlElement& uri, const ByteRange& range);
+		Url(const UrlElement& uri, bool bForceAbsolute=true);
+		Url(const UrlElement& uri, const ByteRange& range, bool bForceAbsolute=true);
 
 		~Url();
 
@@ -91,7 +91,7 @@ class Url {
 		short int toPortAsInt() const;
 
 	protected:
-		void init(const UrlElement &uri);
+		void init(const UrlElement &uri, bool bForceAbsolute=true);
 		//void fire(Part p);
 	private:
 		UrlElement scheme;
@@ -170,7 +170,7 @@ public:
 	Protocol Type;
 };
 
-static std::map<UrlScheme, UrlElement> SchemeMap;
+static std::map<UrlScheme::Protocol, UrlElement> SchemeMap;
 
 class UrlMap {
 

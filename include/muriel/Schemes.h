@@ -25,16 +25,16 @@
 //////////////// ADD MORE SCHEMES HERE //////////////////
 
 INIT_BEGIN
-ADD_SCHEME(Url::FTP, "ftp");
-ADD_SCHEME(Url::HTTP, "http");
-ADD_SCHEME(Url::HTTPS, "https");
-ADD_SCHEME(Url::RTSP, "rtsp");
-ADD_SCHEME(Url::FILE, "file");
-ADD_SCHEME(Url::DVD, "dvd");
-ADD_SCHEME(Url::VCD, "vcd");
-ADD_SCHEME(Url::BLURAY, "blueray");
-ADD_SCHEME(Url::MAIL, "mailto");
-ADD_SCHEME(Url::ABOUT, "about");
+ADD_SCHEME(UrlScheme::FTP, "ftp");
+ADD_SCHEME(UrlScheme::HTTP, "http");
+ADD_SCHEME(UrlScheme::HTTPS, "https");
+ADD_SCHEME(UrlScheme::RTSP, "rtsp");
+ADD_SCHEME(UrlScheme::FILE, "file");
+ADD_SCHEME(UrlScheme::DVD, "dvd");
+ADD_SCHEME(UrlScheme::VCD, "vcd");
+ADD_SCHEME(UrlScheme::BLURAY, "blueray");
+ADD_SCHEME(UrlScheme::MAIL, "mailto");
+ADD_SCHEME(UrlScheme::ABOUT, "about");
 INIT_END
 
 #endif /* CONFIG_H_ */
