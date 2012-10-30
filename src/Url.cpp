@@ -37,18 +37,7 @@ using namespace std;
 			init(uri, bForceAbsolute);
 			m_range = range;
 	}
-/*
-	Url::Url(const Url& url) {
-			scheme = url.getScheme();
-			port = url.getPort();
-			host = url.getHost();
-			path = url.getPath();
-			query = url.getQuery();
-			fragment = url.getFragment();
-			m_range = url.getRange();
-			//m_Listeners.clear();
-	}
-*/
+
 	/*
 	 *
 	 *
@@ -146,8 +135,6 @@ using namespace std;
 */
 				query = "";
 				fragment = "";
-
-
 	}
 
 	Url::~Url() {
