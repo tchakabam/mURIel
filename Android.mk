@@ -8,15 +8,15 @@ include $(CLEAR_VARS)
 LOCAL_ARM_MODE := arm
 
 muriel_src := \
-	../muriel/src/Url.cpp \
-	../muriel/src/ByteRange.cpp
+	internal/mURIel/src/Url.cpp \
+	internal/mURIel/src/ByteRange.cpp
 
-local_c_includes := $(LOCAL_PATH)/../muriel/include 
+local_c_includes := $(LOCAL_PATH)/internal/mURIel/include 
 	
 LOCAL_SRC_FILES := $(muriel_src)
 LOCAL_MODULE := libmuriel
 
-RUNTIME_STL_PATH :=$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++
+#RUNTIME_STL_PATH :=$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++
 
 LOCAL_C_INCLUDES += $(RUNTIME_STL_PATH)/include $(RUNTIME_STL_PATH)/libs/$(TARGET_ARCH_ABI)/include 
 
