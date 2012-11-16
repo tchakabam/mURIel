@@ -80,11 +80,14 @@ using namespace std;
 
 					host_end = uri.find_first_of("/", host_begin+1);
 
-					host = uri.substr(host_begin, host_end - host_begin);
+					if (host_end != string::npos) {
 
-					bHost = true;
+						host = uri.substr(host_begin, host_end - host_begin);
 
-					MURIEL_LOG("Host: %s", host.c_str());
+						bHost = true;
+
+						MURIEL_LOG("Host: %s", host.c_str());
+					}
 				}
 
 				//PATH: ///////////////////////////////////////////////////////////////
