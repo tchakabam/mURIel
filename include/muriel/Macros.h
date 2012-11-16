@@ -29,7 +29,7 @@
 
 //#define AUTO_INITIALIZE //use this to build the scheme map automatically when the first instance of a Url is created
 
-#define MURIEL_VERSION 0.4
+#define MURIEL_VERSION 401  // dec  MMmmss (mayor, minor, sub)
 
 ////////////////// DEBUG LOG ///////////////////////
 
