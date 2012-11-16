@@ -231,6 +231,109 @@ using namespace std;
 		//fire(p);
 	}
 
+	bool Url::makeAbsolute (const Url& base) {
+		if (! scheme.empty()) {
+			// url is already absolute, nothing to do
+			return true;
+		}
+		scheme = base.scheme;
+
+		if (! host.empty()) {
+			return true;
+		}
+		host = base.host;
+		port = base.port;
+
+		if (! path.empty()) {
+		       if (path.at(0) == '/') {
+			       // path is already absolute, keep it
+			       return true;
+		       }
+		       if (base.path.at(0) != '/') {
+			       // base path is not absolute, handle it like a '/' and make the
+			       // current path absolute.
+			       path.insert (0, 1, '/');
+			       return false;
+		       }
+		       // relative path, resolve it
+
+		       // get start of base's last path segment
+		       int baseLastSeg = base.path.find_last_of ('/');
+		       // will never return string::npos, since we checked for a leading '/' already.
+
+		       // handle initial '.' and '..' path segments
+		       const char *rel_path = path.c_str();
+		       int offset = 0;
+		       bool too_few_base_segments = false;
+		       char c;
+
+		       while ((c = rel_path[offset]) && c == '.' && baseLastSeg > 0)
+		       {
+			       // first segment begins with a '.'
+			       bool shift_segment = false;
+			       int num_skip = 1;
+
+			       c = rel_path[offset+1];
+
+			       if (c == '.' )
+			       {
+				       c = rel_path[offset+2];
+				       shift_segment = true;
+				       num_skip += 1;
+			       }
+
+			       if (c == '/')
+			       {
+				       // this was either a './' or a '../' prefix
+				       num_skip += 1;
+			       }
+			       else if (c == 0)
+			       {
+				       // end of path segment
+			       }
+			       else
+			       {
+				       // not a special segment.
+				       // take the remainig path as it is
+				       num_skip = 0;
+				       break;
+			       }
+
+			       if (shift_segment)
+			       {
+				       if (baseLastSeg <= 0) {
+					       too_few_base_segments = true;
+					       break;
+				       }
+				       // skip last segment (this will reduce baseLastSeg)
+				       baseLastSeg = base.path.find_last_of ('/', baseLastSeg-1);
+				       // will never return string::npos, since we checked for a leading '/' already.
+			       }
+
+			       offset += num_skip;
+		       }
+
+		       // replace the prefix of '..' and '.' segments by the remaining segments of the base path (including the '/')
+		       path.replace (0, offset, base.path, 0, baseLastSeg + 1);
+
+		       return ! too_few_base_segments;
+		}
+
+		if (! query.empty()) {
+			// we already have a query part
+			return true;
+		}
+		query = base.query;
+
+		if (! fragment.empty()) {
+			// we already have a fragment part
+			return true;
+		}
+		fragment = base.fragment;
+
+		return true;
+	}
+
 	char Url::getAnalysis() {
 
 		if( isAbsolute() ) return MURIEL_ABSOLUTE;
@@ -269,6 +372,20 @@ using namespace std;
 	}
 
 	short int Url::toPortAsInt() const { return (short int) atoi(port.c_str()); }
+
+	void Url::swap (Url& other)
+	{
+		scheme.swap(other.scheme);
+		port.swap(other.port);
+		host.swap(other.host);
+		path.swap(other.path);
+		query.swap(other.query);
+		fragment.swap(other.fragment);
+
+		ByteRange tmp(m_range);
+		m_range = other.m_range;
+		other.m_range = tmp;
+	}
 
     /*
      *

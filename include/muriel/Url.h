@@ -71,6 +71,8 @@ class Url {
 		bool isAbsolute();
 		bool isMalformed();
 
+		bool makeAbsolute(const Url& base);
+
 		char getAnalysis();
 
 		const ByteRange & getRange() const;
@@ -89,6 +91,8 @@ class Url {
 		UrlElement toPartial(bool bScheme, bool bHost, bool bPort, bool bDir, bool bFile, bool bQuery, bool bFragment) const;
 
 		short int toPortAsInt() const;
+
+		void swap (Url& other);
 
 	protected:
 		void init(const UrlElement &uri, bool bForceAbsolute=true);
