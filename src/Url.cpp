@@ -51,60 +51,80 @@ using namespace std;
 				/* Do we have a scheme ? */
 				MURIEL_LOG("Parsing: %s", uri.c_str());
 
-				size_t pHasScheme = uri.find("://");
+				const char *start = uri.c_str();
+				const char *cstr = start;
 				size_t scheme_end = 0;
 				bool bScheme = false;
 
-				if (pHasScheme != string::npos) {
+				if (isalpha (cstr[0])) {
+					cstr += 1;
+					while (isalnum (*cstr) || *cstr == '+' || *cstr == '-' || *cstr == '.') {
+						cstr += 1;
+					}
+					if (*cstr == ':') {
+						bScheme = true;
+						scheme_end = std::distance (start, cstr);
+						scheme = uri.substr(0, scheme_end);
+						scheme_end += 1; // skip ':'
 
-					scheme_end = uri.find_first_of(":", 0);
-					bScheme = true;
-
-					scheme = uri.substr(0, scheme_end);
-
-					MURIEL_LOG("Scheme: %s", scheme.c_str());
+						MURIEL_LOG("Scheme: %s", scheme.c_str());
+					}
 				}
 
 				//HOST: /////////////////////////////////////////////////////////
-				size_t host_begin = 0;
-				size_t host_end;
+				size_t host_begin = scheme_end;
+				size_t host_end = scheme_end;
 				bool bHost = false;
+				/*
 				if( ( uri.at(0) != '/' && scheme.size() > 0 ) //in this case it should be absolute
 									|| ( bForceAbsolute ) ) {
+				*/
+				if( host_begin+2 < uri.size() && uri.at(host_begin) == '/' && uri.at(host_begin+1) == '/' ) {
 
-					if(bScheme) {
-						host_begin = uri.find_first_not_of("/", scheme_end+1);
-					} else {
-						host_begin = 0;
+					host_begin += 2;
+					host_end = uri.find_first_of("/?#", host_begin);
+
+					if (host_end == string::npos) {
+						host_end = uri.length();
 					}
 
-					host_end = uri.find_first_of("/", host_begin+1);
+					host = uri.substr(host_begin, host_end - host_begin);
 
-					if (host_end != string::npos) {
+					bHost = true;
 
-						host = uri.substr(host_begin, host_end - host_begin);
-
-						bHost = true;
-
-						MURIEL_LOG("Host: %s", host.c_str());
-					}
+					MURIEL_LOG("Host: %s", host.c_str());
 				}
 
 				//PATH: ///////////////////////////////////////////////////////////////
 
-				size_t path_begin;
-				size_t path_end = uri.find_first_of("?#", host_begin+1);
+				size_t path_begin = host_end;
+				size_t path_end = host_end;
 
-				if(bHost) path_begin = uri.find_first_of("/?#", host_begin+1);
-				else path_begin = 0;
+				if (path_begin < uri.size()) {
+					path_end = uri.find_first_of("?#", host_end);
+					
+					if(path_end == string::npos) {
+						path_end = uri.length();
+					}
+					path = uri.substr(path_begin, path_end-path_begin);
 
-				if (path_begin == string::npos) {
-					path = "/";
-				} else if(path_end == string::npos) {
-					path_end = uri.length();
+					if (path.empty() && bForceAbsolute) {
+						path = "/";
+					}
 				}
+#if 0
+				if (path_begin < uri.size() && uri.at(path_begin) != '/') {
+					path = "/";
+				} else {
+					path_end = uri.find_first_of("?#", host_end+1);
+					
+					if(path_end == string::npos) {
+						path_end = uri.length();
+					}
+					path = uri.substr(path_begin, path_end-path_begin);
+				}
+#endif
 
-				path = uri.substr(path_begin, path_end-path_begin);
 
 				MURIEL_LOG("Path: %s", path.c_str());
 
@@ -124,20 +144,27 @@ using namespace std;
 				 *
 				 * TODO: support for query and fragment parts in URIs
 				 */
-				/*
+
 				//query begin
-				size_t query_begin = uri.find_first_of("?", host_begin+1);
-
-
-				size_t query_end = uri.find_first_of("#", host_begin+1);
+				
+				size_t query_begin = path_end;
+				size_t query_end   = path_end;
+				if (query_begin < uri.size() && uri.at(query_begin) == '?') {
+					query_begin += 1;
+					query_end = uri.find_first_of("#", query_begin);
+					if(query_end == string::npos) {
+						query_end = uri.length();
+					}
+					query = uri.substr(query_begin, query_end-query_begin);
+				}
 
 				//fragment begin
-				size_t fragment_begin = uri.find_first_of("#", host_begin+1);
-
-				size_t fragment_end = uri.length()-1;
-*/
-				query = "";
-				fragment = "";
+				size_t fragment_begin = query_end;
+				size_t fragment_end   = query_end;
+				if (fragment_begin < uri.size() && uri.at(fragment_begin) == '#') {
+					fragment_begin += 1;
+					fragment = uri.substr(fragment_begin);
+				}
 	}
 
 	Url::~Url() {
@@ -244,12 +271,12 @@ using namespace std;
 		host = base.host;
 		port = base.port;
 
-		if (! path.empty()) {
-		       if (path.at(0) == '/') {
+		if (! path.empty() || ! query.empty()) {
+		       if (! path.empty() && path.at(0) == '/') {
 			       // path is already absolute, keep it
 			       return true;
 		       }
-		       if (base.path.at(0) != '/') {
+		       if (base.path.empty() || base.path.at(0) != '/') {
 			       // base path is not absolute, handle it like a '/' and make the
 			       // current path absolute.
 			       path.insert (0, 1, '/');
@@ -319,10 +346,15 @@ using namespace std;
 		       return ! too_few_base_segments;
 		}
 
-		if (! query.empty()) {
-			// we already have a query part
-			return true;
-		}
+		// only a fragment or an empty string has been given in the URI reference
+		// so according to the RFC this refers the ducument currently loaded.
+		// Since this case is not (yet) handled by the Url class, the parts
+		// not given in the URI reference are all taken from the base URI
+		// to create a URI that refers to the source of the current document.
+		// This approach may lead to non-conformant results if used e.g. within
+		// documents retrieved via HTTP POST.
+
+		path = base.path;
 		query = base.query;
 
 		if (! fragment.empty()) {
