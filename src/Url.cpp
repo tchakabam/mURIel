@@ -492,7 +492,113 @@ using namespace std;
 	}
 */
 
+#ifdef ENABLE_TESTS
+
+#include <stdio.h>
+
+static class UrlTests {
+	int m_numTests;
+	int m_numFailedTests;
+
+	void checkUrlElement (const UrlElement& elem, const char *result)
+	{
+		m_numTests += 1;
+		if (elem != result) {
+			fprintf (stderr, "Test %d: %s: failed: expected '%s' instead of '%s'\n", m_numTests, __FUNCTION__, result, elem.c_str());
+			m_numFailedTests += 1;
+		}
+	}
+
+	void checkAbsolute (const Url& base, const char *relUrl, const char *result, bool retval = true)
+	{
+		bool success = true;
+		m_numTests += 1;
+		Url url(relUrl, false);
+		bool ret = url.makeAbsolute (base);
+		UrlElement absUrl (url.toFull());
+		if (absUrl != result) {
+			fprintf (stderr, "Test %d: %s: failed: expected '%s' instead of '%s' (relUrl = '%s', base = '%s', ret = %d)\n", m_numTests, __FUNCTION__, result, absUrl.c_str(), relUrl, base.toFull().c_str(), (int)ret);
+			Url url2(relUrl, false);
+			fprintf (stderr, "\trelUrl = '%s', scheme = '%s', host = '%s', path = '%s', query = '%s', fragment = '%s'\n", url2.toFull().c_str(), url2.getScheme().c_str(), url2.getHost().c_str(), url2.getPath().c_str(), url2.getQuery().c_str(), url2.getFragment().c_str());
+			success = false;
+		}
+		if (!!ret != !!retval) {
+			fprintf (stderr, "Test %d: %s: return value mismatch: expected %d instead of %d (relUrl = '%s', base = '%s')\n", m_numTests, __FUNCTION__, (int)retval, (int)ret, relUrl, base.toFull().c_str());
+			success = false;
+		}
+
+		if (! success)
+			m_numFailedTests += 1;
+	}
+
+public:
+	UrlTests () 
+	: m_numTests (0)
+	, m_numFailedTests (0)
+	{
+		Url base ("http://a/b/c/d;p?q");
+
+		checkUrlElement (base.getScheme(), "http");
+		checkUrlElement (base.getHost(), "a");
+		checkUrlElement (base.getPath(), "/b/c/d;p");
+		checkUrlElement (base.getQuery(), "q");
+		checkUrlElement (base.toFull(), "http://a/b/c/d;p?q");
+
+		Url simple ("g:h");
+
+		checkUrlElement (simple.getScheme(), "g");
+		checkUrlElement (simple.getHost(), "");
+		checkUrlElement (simple.getPath(), ""); // the parser does not handle this kind of URI yet
+		checkUrlElement (simple.getQuery(), "");
+
+		// Normal Cases (RFC2396 C.1)
+		checkAbsolute (base, "g:h", "g:h");     // the parser does not handle this kind of URI yet
+		checkAbsolute (base, "g", "http://a/b/c/g");
+		checkAbsolute (base, "./g", "http://a/b/c/g");
+		checkAbsolute (base, "g/", "http://a/b/c/g/");
+		checkAbsolute (base, "/g", "http://a/g");
+		checkAbsolute (base, "//g", "http://g");
+		checkAbsolute (base, "?y", "http://a/b/c/?y");
+		checkAbsolute (base, "g?y", "http://a/b/c/g?y");
+		checkAbsolute (base, "#s", "http://a/b/c/d;p?q#s");
+		checkAbsolute (base, "g#s", "http://a/b/c/g#s");
+		checkAbsolute (base, "g?y#s", "http://a/b/c/g?y#s");
+		checkAbsolute (base, ";x", "http://a/b/c/;x");
+		checkAbsolute (base, "g;x", "http://a/b/c/g;x");
+		checkAbsolute (base, "g;x?y#s", "http://a/b/c/g;x?y#s");
+		checkAbsolute (base, ".", "http://a/b/c/");
+		checkAbsolute (base, "./", "http://a/b/c/");
+		checkAbsolute (base, "..", "http://a/b/");
+		checkAbsolute (base, "../", "http://a/b/");
+		checkAbsolute (base, "../g", "http://a/b/g");
+		checkAbsolute (base, "../..", "http://a/");
+		checkAbsolute (base, "../../", "http://a/");
+		checkAbsolute (base, "../../g", "http://a/g");
+
+		// Abnormal Cases (RFC2396 C.2)
+		checkAbsolute (base, "../../../g", "http://a/../g");
+		checkAbsolute (base, "../../../../g", "http://a/../../g");
+		checkAbsolute (base, "/./g", "http://a/./g");
+		checkAbsolute (base, "/../g", "http://a/../g");
+		checkAbsolute (base, "g.", "http://a/b/c/g.");
+		checkAbsolute (base, ".g", "http://a/b/c/.g");
+		checkAbsolute (base, "g..", "http://a/b/c/g..");
+		checkAbsolute (base, "..g", "http://a/b/c/..g");
+		checkAbsolute (base, "./../g", "http://a/b/g");
+		// checkAbsolute (base, "./g/.", "http://a/b/c/g/");  // the implementation does not normalize within the relative URI reference
+		// checkAbsolute (base, "g/./h", "http://a/b/c/g/h"); // ditto
+		// checkAbsolute (base, "g/../h", "http://a/b/c/h"); // ditto
+		// checkAbsolute (base, "g;x=1/./y", "http://a/b/c/g;x=1/y"); // ditto
+		// checkAbsolute (base, "g;x=1/../y", "http://a/b/c/y"); // ditto
+		checkAbsolute (base, "g?y/./x", "http://a/b/c/g?y/./x");
+		checkAbsolute (base, "g?y/../x", "http://a/b/c/g?y/../x");
+		checkAbsolute (base, "g#s/./x", "http://a/b/c/g#s/./x");
+		checkAbsolute (base, "g#s/../x", "http://a/b/c/g#s/../x");
 
 
+		fprintf (stderr, "Test Result: %d/%d ok\n", m_numTests - m_numFailedTests, m_numTests);
+	}
+} myUrlTests;
 
+#endif
 
