@@ -26,6 +26,10 @@
 
 using namespace std;
 
+	Url::Url() {
+		//
+	}
+
 	Url::Url(const string& uri, bool bForceAbsolute)
 	{
 			init(uri, bForceAbsolute);
@@ -46,6 +50,8 @@ using namespace std;
 	 */
 
 	void Url::init(const UrlElement & uri, bool bForceAbsolute) {
+
+				if(uri.size() == 0) return;
 
 				//SCHEME: //////////////////////////////////////////////////////////////
 				/* Do we have a scheme ? */

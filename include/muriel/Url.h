@@ -31,7 +31,6 @@
 
 class UrlListener;
 
-
 class Url {
 	public:
 
@@ -52,7 +51,6 @@ class Url {
 		};
 
 		Url();
-		//Url(const Url& url);
 		Url(const UrlElement& uri, bool bForceAbsolute=true);
 		Url(const UrlElement& uri, const ByteRange& range, bool bForceAbsolute=true);
 
