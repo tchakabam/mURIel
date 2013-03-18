@@ -442,7 +442,8 @@ using namespace std;
 
 			if ( port.length() != 0 )  {  stream << ":" << port; }
 
-			stream << "/" << path;
+			if(path[0] != '/') { stream << "/" << path; }
+			else { stream << path; }
 
 			if ( query.length() != 0)  {  stream << "?" << query; }
 			if ( fragment.length() != 0) { stream << "#" << fragment; }
